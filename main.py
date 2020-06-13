@@ -9,7 +9,7 @@ if __name__ == '__main__':
     agent = Agent(gamma=0.99, epsilon=1.0, batch_size=64, n_actions=4, eps_end=0.01,
                   input_dims=[8], lr=0.001)
     scores, eps_history = [], []
-    n_games = 10
+    n_games = 500
     
     for i in range(n_games):
         score = 0
@@ -32,7 +32,7 @@ if __name__ == '__main__':
                 'average score %.2f' % avg_score,
                 'epsilon %.2f' % agent.epsilon)
 
-    T.save(agent.Q_eval)
+    T.save(agent.Q_eval, str(n_games)+'_iteration_model.pt')
     x = [i+1 for i in range(n_games)]
     filename = 'lunar_lander.png'
     plotLearning(x, scores, eps_history, filename)
