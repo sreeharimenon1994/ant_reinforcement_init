@@ -110,6 +110,6 @@ class Agent():
         #   self.Q_next.load_state_dict(self.Q_eval.state_dict())
 
     def save_model():
-        T.save(self.Q_eval.state_dict(), 'test_model.pt')
+        T.save('test_model.pt')
 
 
