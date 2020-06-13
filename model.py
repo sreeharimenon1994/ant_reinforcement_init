@@ -109,7 +109,7 @@ class Agent():
         #if self.iter_cntr % self.replace_target == 0:
         #   self.Q_next.load_state_dict(self.Q_eval.state_dict())
 
-    def save():
+    def save_model():
         T.save(self.Q_eval.state_dict(), 'test_model.pt')
 
 

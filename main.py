@@ -31,7 +31,7 @@ if __name__ == '__main__':
                 'average score %.2f' % avg_score,
                 'epsilon %.2f' % agent.epsilon)
 
-    agent.save()
+    agent.save_model()
     x = [i+1 for i in range(n_games)]
     filename = 'lunar_lander.png'
     plotLearning(x, scores, eps_history, filename)
