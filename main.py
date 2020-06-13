@@ -2,6 +2,7 @@ import gym
 from model import Agent
 from utils import plotLearning
 import numpy as np
+import torch as T
 
 if __name__ == '__main__':
     env = gym.make('LunarLander-v2')
@@ -31,7 +32,7 @@ if __name__ == '__main__':
                 'average score %.2f' % avg_score,
                 'epsilon %.2f' % agent.epsilon)
 
-    agent.save_model()
+    T.save(agent.Q_eval)
     x = [i+1 for i in range(n_games)]
     filename = 'lunar_lander.png'
     plotLearning(x, scores, eps_history, filename)
