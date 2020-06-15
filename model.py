@@ -25,8 +25,9 @@ class DeepQNetwork(nn.Module):
     def forward(self, state):
         x = F.relu(self.fc1(state))
         x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
-        actions = self.fc4(x)
+        # x = F.relu(self.fc3(x))
+        actions = self.fc3(x)
+        # actions = self.fc4(x)
 
         return actions
 
@@ -46,7 +47,7 @@ class Agent():
         self.replace_target = 100
 
         self.Q_eval = DeepQNetwork(lr, n_actions=n_actions, input_dims=input_dims,
-                                    fc1_dims=64, fc2_dims=64, fc3_dims=64)
+                                    fc1_dims=256, fc2_dims=256, fc3_dims=256)
         # self.Q_next = DeepQNetwork(lr, n_actions=n_actions, input_dims=input_dims,
         #                             fc1_dims=64, fc2_dims=64, fc3_dims=64)
 
