@@ -38,13 +38,15 @@ class Agent():
         self.mem_size = max_mem_size
         self.batch_size = batch_size
         self.mem_cntr = 0
-        self.iter_cntr = 0
-        self.replace_target = 100
+        self.iter_cntr = 1
+        self.replace_target = 50
 
         self.Q_eval = DeepQNetwork(lr, n_actions=n_actions, input_dims=input_dims,
                                     fc1_dims=256, fc2_dims=256)
-        # self.Q_next = DeepQNetwork(lr, n_actions=n_actions, input_dims=input_dims,
-        #                             fc1_dims=64, fc2_dims=64, fc3_dims=64)
+        self.Q_next = DeepQNetwork(lr, n_actions=n_actions, input_dims=input_dims,
+                                    fc1_dims=256, fc2_dims=256)
+        self.Q_next.load_state_dict(self.Q_eval.state_dict())
+        self.q_next.eval()
 
         self.state_memory = np.zeros((self.mem_size, *input_dims), dtype=np.float32)
         self.new_state_memory = np.zeros((self.mem_size, *input_dims), dtype=np.float32)
@@ -91,7 +93,8 @@ class Agent():
         terminal_batch = T.tensor(self.terminal_memory[batch]).to(self.Q_eval.device)
 
         q_eval = self.Q_eval.forward(state_batch)[batch_index, action_batch]
-        q_next = self.Q_eval.forward(new_state_batch)
+       
+        q_next = self.Q_next.forward(new_state_batch)
         q_next[terminal_batch] = 0.0
 
         q_target = reward_batch + self.gamma*T.max(q_next,dim=1)[0]
@@ -104,8 +107,8 @@ class Agent():
         self.epsilon = self.epsilon - self.eps_dec if self.epsilon > self.eps_min \
                        else self.eps_min
 
-        #if self.iter_cntr % self.replace_target == 0:
-        #   self.Q_next.load_state_dict(self.Q_eval.state_dict())
+        if self.iter_cntr % self.replace_target == 0:
+            self.Q_next.load_state_dict(self.Q_eval.state_dict())
 
 
 
