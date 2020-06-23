@@ -46,7 +46,7 @@ class Agent():
         self.Q_next = DeepQNetwork(lr, n_actions=n_actions, input_dims=input_dims,
                                     fc1_dims=256, fc2_dims=256)
         self.Q_next.load_state_dict(self.Q_eval.state_dict())
-        self.q_next.eval()
+        self.Q_next.eval()
 
         self.state_memory = np.zeros((self.mem_size, *input_dims), dtype=np.float32)
         self.new_state_memory = np.zeros((self.mem_size, *input_dims), dtype=np.float32)
