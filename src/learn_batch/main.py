@@ -6,7 +6,7 @@ import torch as T
 
 if __name__ == '__main__':
     env = gym.make('LunarLander-v2')
-    agent = Agent(gamma=0.99, epsilon=1.0, batch_size=64, n_actions=4, eps_end=0.01,
+    agent = Agent(gamma=0.99, epsilon=1.0, batch_size=128, n_actions=4, eps_end=0.01,
                   input_dims=[8], lr=0.001)
     scores, eps_history = [], []
     n_games = 4000
@@ -20,7 +20,7 @@ if __name__ == '__main__':
             action = agent.choose_action(observation)
             observation_, reward, done, info = env.step(action)
             score += reward
-            agent.store_transition(observation, action, reward-(steps/20), 
+            agent.store_transition(observation, action, reward-(steps/100), 
                                     observation_, done)
             agent.learn()
             observation = observation_
