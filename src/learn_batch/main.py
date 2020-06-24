@@ -34,7 +34,7 @@ if __name__ == '__main__':
                 'average score %.2f' % avg_score,
                 'epsilon %.2f' % agent.epsilon)
 
-    T.save(agent.Q_eval, str(n_games)+'_iteration_model.pt')
+    T.save(agent.Q_eval.state_dict(), str(n_games)+'_iteration_model.pt')
     x = [i+1 for i in range(n_games)]
     filename = 'lunar_lander.png'
-    plotLearning(x, scores, eps_history, filename)
+    # plotLearning(x, scores, eps_history, filename)
