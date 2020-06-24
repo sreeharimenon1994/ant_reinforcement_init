@@ -9,7 +9,7 @@ if __name__ == '__main__':
     agent = Agent(gamma=0.99, epsilon=1.0, batch_size=64, n_actions=4, eps_end=0.01,
                   input_dims=[8], lr=0.001)
     scores, eps_history = [], []
-    n_games = 2000
+    n_games = 4000
     
     for i in range(n_games):
         score = 0
@@ -20,7 +20,7 @@ if __name__ == '__main__':
             action = agent.choose_action(observation)
             observation_, reward, done, info = env.step(action)
             score += reward
-            agent.store_transition(observation, action, reward-(steps/10), 
+            agent.store_transition(observation, action, reward-(steps/20), 
                                     observation_, done)
             agent.learn()
             observation = observation_
