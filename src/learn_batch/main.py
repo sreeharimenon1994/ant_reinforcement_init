@@ -15,6 +15,7 @@ if __name__ == '__main__':
         score = 0
         done = False
         observation = env.reset()
+        steps = 0
         while not done:
             action = agent.choose_action(observation)
             observation_, reward, done, info = env.step(action)
@@ -23,6 +24,7 @@ if __name__ == '__main__':
                                     observation_, done)
             agent.learn()
             observation = observation_
+            steps += 1
         scores.append(score)
         eps_history.append(agent.epsilon)
 
