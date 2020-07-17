@@ -4,9 +4,10 @@ import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 
-class DeepQNetwork(nn.Module):
+
+class DeepQNetworkReward(nn.Module):
     def __init__(self, lr, input_dims, fc1_dims, fc2_dims, n_actions):
-        super(DeepQNetwork, self).__init__()
+        super(DeepQNetworkReward, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
@@ -14,19 +15,21 @@ class DeepQNetwork(nn.Module):
         self.fc1 = nn.Linear(*self.input_dims, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
         self.fc3 = nn.Linear(self.fc2_dims, self.n_actions)
+        self.fc4 = nn.Linear(self.fc2_dims, 1)
 
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
         self.loss = nn.MSELoss()
-        self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
+        self.device = T.device('cpu' if T.cuda.is_available() else 'cpu')
         self.to(self.device)
 
     def forward(self, state):
-        x = F.relu(self.fc1(state))
-        x = F.relu(self.fc2(x))
-        actions = self.fc3(x)
-        return actions
+        x = self.fc1(state)
+        x = self.fc2(x)
+        # x = self.fc3(x)
+        x = self.fc4(x)
+        return x
 
-class Agent():
+class RewardAgent():
     def __init__(self, gamma, epsilon, lr, input_dims, batch_size, n_actions,
             max_mem_size=100000, eps_end=0.05, eps_dec=1e-6):
         self.gamma = gamma
@@ -41,9 +44,9 @@ class Agent():
         self.iter_cntr = 1
         self.replace_target = 50
 
-        self.Q_eval = DeepQNetwork(lr, n_actions=n_actions, input_dims=input_dims,
+        self.Q_eval = DeepQNetworkReward(lr, n_actions=n_actions, input_dims=input_dims,
                                     fc1_dims=256, fc2_dims=256)
-        self.Q_next = DeepQNetwork(lr, n_actions=n_actions, input_dims=input_dims,
+        self.Q_next = DeepQNetworkReward(lr, n_actions=n_actions, input_dims=input_dims,
                                     fc1_dims=256, fc2_dims=256)
         self.Q_next.load_state_dict(self.Q_eval.state_dict())
         self.Q_next.eval()
@@ -54,23 +57,22 @@ class Agent():
         self.reward_memory = np.zeros(self.mem_size, dtype=np.float32)
         self.terminal_memory = np.zeros(self.mem_size, dtype=np.bool)
 
-    def store_transition(self, state, action, reward, state_, terminal):
+    def store_transition(self, state, action, reward, state_):
         index = self.mem_cntr % self.mem_size
         self.state_memory[index] = state
         self.new_state_memory[index] = state_
         self.reward_memory[index] = reward
         self.action_memory[index] = action
-        self.terminal_memory[index] = terminal
+        # self.terminal_memory[index] = terminal
 
         self.mem_cntr += 1
 
     def choose_action(self, observation):
         if np.random.random() > self.epsilon:
             state = T.tensor([observation]).to(self.Q_eval.device)
-            actions = self.Q_eval.forward(state)
-            action = T.argmax(actions).item()
+            action = self.Q_eval.forward(state)
         else:
-            action = np.random.choice(self.action_space)
+            action = np.random.uniform(-5,5)
 
         return action
 
@@ -90,12 +92,12 @@ class Agent():
         new_state_batch = T.tensor(self.new_state_memory[batch]).to(self.Q_eval.device)
         action_batch = self.action_memory[batch]
         reward_batch = T.tensor(self.reward_memory[batch]).to(self.Q_eval.device)
-        terminal_batch = T.tensor(self.terminal_memory[batch]).to(self.Q_eval.device)
+        # terminal_batch = T.tensor(self.terminal_memory[batch]).to(self.Q_eval.device)
 
         q_eval = self.Q_eval.forward(state_batch)[batch_index, action_batch]
        
         q_next = self.Q_next.forward(new_state_batch)
-        q_next[terminal_batch] = 0.0
+        # q_next[terminal_batch] = 0.0
 
         q_target = reward_batch + self.gamma*T.max(q_next,dim=1)[0]
 
@@ -109,4 +111,6 @@ class Agent():
 
         if self.iter_cntr % self.replace_target == 0:
             self.Q_next.load_state_dict(self.Q_eval.state_dict())
+
+
 

@@ -29,12 +29,11 @@ if __name__ == '__main__':
         eps_history.append(agent.epsilon)
 
         avg_score = np.mean(scores[-100:])
-
         print('episode ', i, 'score %.2f' % score,
                 'average score %.2f' % avg_score,
                 'epsilon %.2f' % agent.epsilon)
 
-    T.save(agent.Q_eval.state_dict(), str(n_games)+'_iteration_model.pt')
+    T.save(agent.Q_eval.state_dict(), str(n_games)+'_iteration_model_test.pt')
     x = [i+1 for i in range(n_games)]
     filename = 'lunar_lander.png'
     # plotLearning(x, scores, eps_history, filename)
