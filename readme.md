@@ -2,6 +2,10 @@
 
 This code pattern demonstrates how reinforcement can be used to train a system to play Lunar Lander game. The agent has to choose between fou action so as the spacecraft lands perfectly.
 
+
+![graph_resnet](/video/video.mp4)
+
+
 ## Installation
 
 Anaconda:
